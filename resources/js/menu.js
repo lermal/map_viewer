@@ -100,7 +100,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        const categories = document.querySelectorAll(".dropdown-category");
+        const categories = document.querySelectorAll(
+            ".dropdown-content .dropdown-category"
+        );
         categories.forEach((category) => {
             const visibleCategoryItems = category.querySelectorAll(
                 '.render-item:not([style*="display: none"])'
@@ -110,6 +112,13 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 category.style.display = "";
             }
+        });
+
+        const filterCategories = document.querySelectorAll(
+            ".filter-dropdown .dropdown-category"
+        );
+        filterCategories.forEach((category) => {
+            category.style.display = "";
         });
 
         if (visibleCount === 0) {
@@ -137,9 +146,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 const filterValue = checkbox.value;
                 const isChecked = checkbox.checked;
 
+                const checkboxItem = checkbox.closest(".checkbox-item");
+                const shuttleItem = checkbox.closest(".shuttle-item");
+
                 if (isChecked) {
                     checkbox.disabled = false;
-                    checkbox.closest(".checkbox-item").style.opacity = "1";
+                    if (checkboxItem) {
+                        checkboxItem.style.opacity = "1";
+                    }
+                    if (shuttleItem) {
+                        shuttleItem.style.opacity = "1";
+                    }
                     return;
                 }
 
@@ -156,14 +173,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (hasMatchingItem) {
                     checkbox.disabled = false;
-                    checkbox.closest(".checkbox-item").style.opacity = "1";
+                    if (checkboxItem) {
+                        checkboxItem.style.opacity = "1";
+                    }
+                    if (shuttleItem) {
+                        shuttleItem.style.opacity = "1";
+                    }
                 } else {
                     checkbox.disabled = true;
-                    checkbox.closest(".checkbox-item").style.opacity = "0.5";
+                    if (checkboxItem) {
+                        checkboxItem.style.opacity = "0.5";
+                    }
+                    if (shuttleItem) {
+                        shuttleItem.style.opacity = "0.5";
+                    }
                 }
             });
         });
     }
+
+    const filterCategories = document.querySelectorAll(
+        ".filter-dropdown .dropdown-category"
+    );
+    filterCategories.forEach((category) => {
+        category.style.display = "";
+    });
 
     filterCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", applyFilters);

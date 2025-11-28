@@ -17,6 +17,7 @@
     <meta property="og:url" content="{{ route('render.show', [$page->slug, $item['id']]) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -31,22 +32,27 @@
                     renders</button>
             </div>
             <div class="filter-dropdown">
-                <div class="filter-container">
+                @if (!empty($filters))
                     @foreach ($filters as $filterName => $filterValues)
-                        <div class="filter-section">
-                            <h3 class="filter-title">{{ ucfirst($filterName) }}</h3>
-                            <div class="checkbox-list">
-                                @foreach ($filterValues as $value)
-                                    <label class="checkbox-item" style="opacity: 1;">
-                                        <input type="checkbox" value="{{ $value }}" class="render-filter"
-                                            data-filter-type="{{ $filterName }}">
-                                        <span class="checkbox-text">{{ $value }}</span>
-                                    </label>
-                                @endforeach
+                        @if (!empty($filterValues))
+                            <div class="dropdown-category">
+                                <strong class="group-name">{{ ucfirst($filterName) }}</strong>
+                                <hr>
+                                <ul class="shuttle-list">
+                                    @foreach ($filterValues as $value)
+                                        <li class="shuttle-item">
+                                            <label class="checkbox-item" style="opacity: 1;">
+                                                <input type="checkbox" value="{{ $value }}"
+                                                    class="render-filter" data-filter-type="{{ $filterName }}">
+                                                <span class="checkbox-text">{{ $value }}</span>
+                                            </label>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
-                        </div>
+                        @endif
                     @endforeach
-                </div>
+                @endif
             </div>
             <div class="dropdown-content">
                 <div id="no-results-message" style="display: none; text-align: center; padding: 20px; color: #f2f4f1;">
