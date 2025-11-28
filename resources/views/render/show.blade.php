@@ -105,7 +105,7 @@
         <div class="render-info-panel">
             <div class="render-info-panel__header">
                 <h2 class="render-info-panel__title">{{ $item['name'] }}</h2>
-                @if (isset($item['price']))
+                @if (isset($item['price']) && $item['price'] > 0)
                     <div class="render-info-panel__price">
                         {{ number_format($item['price'], 0, '.', ' ') }}
                     </div>
@@ -114,26 +114,39 @@
             <div class="render-info-panel__content">
                 @if (!empty($additionalFields))
                     @foreach ($additionalFields as $fieldName => $fieldValue)
-                        <div class="render-info-panel__field">
-                            <div class="render-info-panel__field-name">
-                                {{ ucfirst(str_replace('_', ' ', $fieldName)) }}:
+                        @php
+                            $isEmpty = false;
+                            if (is_array($fieldValue)) {
+                                $isEmpty = empty($fieldValue);
+                            } else {
+                                $isEmpty = empty($fieldValue) && $fieldValue !== '0' && $fieldValue !== 0;
+                            }
+                        @endphp
+                        @if (!$isEmpty)
+                            <div class="render-info-panel__field">
+                                <div class="render-info-panel__field-name">
+                                    {{ ucfirst(str_replace('_', ' ', $fieldName)) }}:
+                                </div>
+                                <div class="render-info-panel__field-value">
+                                    @if (is_array($fieldValue))
+                                        <div class="render-info-panel__tags">
+                                            @foreach ($fieldValue as $tag)
+                                                @if (!empty($tag))
+                                                    <span
+                                                        class="render-info-panel__tags-item">{{ $tag }}</span>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        {{ $fieldValue }}
+                                    @endif
+                                </div>
                             </div>
-                            <div class="render-info-panel__field-value">
-                                @if (is_array($fieldValue))
-                                    <div class="render-info-panel__tags">
-                                        @foreach ($fieldValue as $tag)
-                                            <span class="render-info-panel__tags-item">{{ $tag }}</span>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    {{ $fieldValue }}
-                                @endif
-                            </div>
-                        </div>
+                        @endif
                     @endforeach
                 @endif
             </div>
-            @if (isset($item['description']))
+            @if (isset($item['description']) && !empty(trim($item['description'])))
                 <div class="render-info-panel__description">
                     {{ $item['description'] }}
                 </div>

@@ -213,7 +213,16 @@ class RenderPageService
 
         foreach ($item as $key => $value) {
             if (! in_array($key, $excludedFields)) {
-                $additionalFields[$key] = $value;
+                $isEmpty = false;
+                if (is_array($value)) {
+                    $isEmpty = empty($value);
+                } else {
+                    $isEmpty = empty($value) && $value !== '0' && $value !== 0;
+                }
+
+                if (! $isEmpty) {
+                    $additionalFields[$key] = $value;
+                }
             }
         }
 
