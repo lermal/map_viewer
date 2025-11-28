@@ -68,6 +68,11 @@ class RenderPageService
         return $filters;
     }
 
+    private function splitCamelCase(string $text): string
+    {
+        return preg_replace('/([a-z])([A-Z])/', '$1 $2', $text);
+    }
+
     public function generateCategories(array $items): array
     {
         $categoryNameMap = [
@@ -123,13 +128,18 @@ class RenderPageService
                     $displayName = $letter;
                     $order = 1000 + ord($letter);
                 } else {
-                    $displayName = $categoryNameMap[$groupName] ?? $groupName;
+                    if (isset($categoryNameMap[$groupName])) {
+                        $displayName = $categoryNameMap[$groupName];
+                    } else {
+                        $displayName = $this->splitCamelCase($groupName);
+                    }
                     $order = $categoryOrder[$groupName] ?? 999;
                 }
                 $categories[$groupName] = [
                     'name' => $displayName,
                     'items' => [],
                     'order' => $order,
+                    'sortName' => $displayName,
                 ];
             }
 
@@ -137,12 +147,21 @@ class RenderPageService
         }
 
         uasort($categories, function ($a, $b) {
-            return $a['order'] <=> $b['order'];
+            $orderCompare = $a['order'] <=> $b['order'];
+            if ($orderCompare !== 0) {
+                return $orderCompare;
+            }
+
+            if ($a['order'] === 999 && $b['order'] === 999) {
+                return strcasecmp($a['sortName'], $b['sortName']);
+            }
+
+            return 0;
         });
 
         $result = [];
         foreach ($categories as $category) {
-            unset($category['order']);
+            unset($category['order'], $category['sortName']);
             $result[] = $category;
         }
 
