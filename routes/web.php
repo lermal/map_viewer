@@ -12,3 +12,21 @@ Route::get('/render/{slug}/{id}', [RenderController::class, 'show'])->name('rend
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/api/shuttles/get', [ShuttleApiController::class, 'getShuttles'])->name('api.shuttles.get');
+
+Route::get('/images/renders/{shuttle}/{image}', function (string $shuttle, string $image) {
+    $shuttleLower = strtolower($shuttle);
+
+    $possiblePaths = [
+        "renders/shuttles/{$shuttleLower}.png",
+        "renders/shuttles/{$shuttleLower}.webp",
+        "renders/shuttles/{$image}",
+    ];
+
+    foreach ($possiblePaths as $imagePath) {
+        if (Storage::disk('public')->exists($imagePath)) {
+            return Storage::disk('public')->response($imagePath);
+        }
+    }
+
+    abort(404);
+})->where('image', '.*')->name('images.renders');
