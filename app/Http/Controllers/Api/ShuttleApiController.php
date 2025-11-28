@@ -30,7 +30,16 @@ class ShuttleApiController extends Controller
         $result = [];
 
         foreach ($items as $item) {
-            $group = $item['group'] ?? 'Shipyard';
+            $group = 'Shipyard';
+
+            if (isset($item['_jsonCategory'])) {
+                $group = $item['_jsonCategory'];
+            } elseif (isset($item['class']) && is_array($item['class']) && ! empty($item['class'])) {
+                $group = $item['class'][0];
+            } elseif (isset($item['group'])) {
+                $group = $item['group'];
+            }
+
             $defaultVariant = 'default';
 
             if (! isset($result[$group])) {
