@@ -46,8 +46,7 @@ class UserRenderController extends Controller
         ];
         $request->session()->put('my_renders', $myRenders);
 
-        return redirect()->route('user-renders.show', $userRender)
-            ->with('success', 'Render uploaded successfully! Your render is now available via direct link and is awaiting moderation.');
+        return redirect()->route('user-renders.show', $userRender);
     }
 
     public function index(Request $request)
