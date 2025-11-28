@@ -12,24 +12,6 @@ Space Station 14 Render Viewer is a system for organizing and viewing renders fr
 -   **Flexible filtering system** - filters are automatically generated from data
 -   **Universal structure** - support for any additional fields in JSON
 
-### Key Features
-
--   ✅ Create render pages through admin panel
--   ✅ Upload JSON files with render data
--   ✅ Automatic filter generation from item fields
--   ✅ Automatic grouping by categories (if `category` field is present)
--   ✅ Panoramic image viewing with zoom and pan
--   ✅ Dynamic display of additional fields
--   ✅ Responsive design
-
-### Технологии
-
--   **Backend**: Laravel 12, PHP 8.2+
--   **Admin Panel**: Filament 4
--   **Frontend**: Tailwind CSS 4, JavaScript (ES6+)
--   **Image Viewer**: Panzoom
--   **Database**: MySQL/MariaDB
-
 ## Requirements
 
 -   PHP 8.2 or higher
@@ -70,15 +52,15 @@ cp .env.example .env
 Open `.env` and configure:
 
 ```env
-APP_NAME="SS14 Render Viewer"
-APP_URL=http://shipyard.local
+APP_NAME=YOUR_APP_NAME
+APP_URL=URL_TO_YOUR_SITE
 
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=shipyard
-DB_USERNAME=root
-DB_PASSWORD=
+DB_DATABASE=DB_NAME
+DB_USERNAME=DB_USER_NAME
+DB_PASSWORD=DB_USER_PASSWORD
 ```
 
 ### 5. Generate application key
@@ -252,8 +234,10 @@ shipyard.local/
 
 -   Home page: `/` - list of all active pages
 -   Render page: `/render/{slug}` - list of renders with filters
--   Render view: `/render/{slug}/{id}` - detailed view with panzoom
+-   Render view: `/render/{slug}/{id}` - detailed view
 
-## Лицензия
+## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+Everyone is free to use this project for any purpose under the terms of the MIT license.
