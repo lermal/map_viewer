@@ -539,20 +539,6 @@ body {
         right: 5px !important;
     }
 
-    .filter-dropdown {
-        width: calc(100vw - 10px);
-        max-width: calc(100vw - 10px);
-        margin: 5px;
-        padding: 8px;
-        left: 5px !important;
-        right: 5px !important;
-    }
-
-    .checkbox-item {
-        padding: 6px 4px;
-        min-height: 32px;
-    }
-
     .checkbox-text {
         font-size: 13px;
         padding-left: 22px;
