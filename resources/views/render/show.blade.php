@@ -79,6 +79,10 @@
                 style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
         </div>
         <div class="render-viewer">
+            <div class="render-viewer__loader" id="render-loader">
+                <div class="render-viewer__loader-spinner"></div>
+                <div class="render-viewer__loader-text">Loading render...</div>
+            </div>
             <div class="render-viewer__image-container">
                 <img class="render-viewer__image"
                     src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}" alt="{{ $item['name'] }}">
@@ -128,6 +132,30 @@
         window.renderData = @json($items);
         window.filters = @json($filters);
         window.pageSlug = '{{ $page->slug }}';
+
+        const renderImage = document.querySelector('.render-viewer__image');
+        const renderLoader = document.getElementById('render-loader');
+
+        function hideLoader() {
+            setTimeout(() => {
+                if (renderLoader) {
+                    renderLoader.style.opacity = '0';
+                    renderLoader.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => {
+                        renderLoader.style.display = 'none';
+                    }, 300);
+                }
+            }, 500);
+        }
+
+        if (renderImage) {
+            if (renderImage.complete) {
+                hideLoader();
+            } else {
+                renderImage.addEventListener('load', hideLoader);
+                renderImage.addEventListener('error', hideLoader);
+            }
+        }
     </script>
 </body>
 
