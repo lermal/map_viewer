@@ -1,4 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const navbarToggle = document.querySelector(".navbar-toggle");
+    const navbarItems = document.querySelector(".navbar-items");
+
+    if (navbarToggle && navbarItems) {
+        navbarToggle.addEventListener("click", function () {
+            navbarToggle.classList.toggle("active");
+            navbarItems.classList.toggle("active");
+        });
+
+        document.addEventListener("click", function (event) {
+            if (
+                !navbarToggle.contains(event.target) &&
+                !navbarItems.contains(event.target)
+            ) {
+                navbarToggle.classList.remove("active");
+                navbarItems.classList.remove("active");
+            }
+        });
+    }
+
     const renderToggle =
         document.querySelector(".render-toggle") ||
         document.querySelector(".shuttle-toggle");

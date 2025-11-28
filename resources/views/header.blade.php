@@ -5,6 +5,11 @@
                 <img src="https://shipyard.frontierstation14.com/images/Logo.webp" alt="Frontier Station" width="140"
                     height="62.06">
             </div>
+            <button class="navbar-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="navbar-items">
                 <a class="btn-primary" href="{{ route('render.index') }}"><i class="ri-home-line"></i> Home</a>
                 @isset($renderPages)
