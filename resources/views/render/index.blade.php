@@ -5,6 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Laravel') }} - Render Pages</title>
+    <meta name="description" content="Welcome to the Shipyard - Choose a category to view renders">
+    <meta property="og:title" content="{{ config('app.name', 'Laravel') }} - Render Pages">
+    <meta property="og:description" content="Welcome to the Shipyard - Choose a category to view renders">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('render.index') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))

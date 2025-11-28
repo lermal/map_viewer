@@ -8,6 +8,14 @@
     @if ($page->meta_description)
         <meta name="description" content="{{ $page->meta_description }}">
     @endif
+    <meta property="og:title" content="{{ $page->meta_title ?? $page->name }} - {{ config('app.name', 'Laravel') }}">
+    @if ($page->meta_description)
+        <meta property="og:description" content="{{ $page->meta_description }}">
+    @elseif ($page->description)
+        <meta property="og:description" content="{{ $page->description }}">
+    @endif
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('render.page', $page->slug) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))

@@ -5,6 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $item['name'] }} - {{ config('app.name', 'Laravel') }}</title>
+    @if (isset($item['description']))
+        <meta name="description" content="{{ $item['description'] }}">
+    @endif
+    <meta property="og:title" content="{{ $item['name'] }} - {{ config('app.name', 'Laravel') }}">
+    @if (isset($item['description']))
+        <meta property="og:description" content="{{ $item['description'] }}">
+    @endif
+    <meta property="og:image" content="{{ url('storage/' . $data['renders_path'] . $item['image']) }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ route('render.show', [$page->slug, $item['id']]) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
