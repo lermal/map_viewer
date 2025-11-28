@@ -4,12 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }} - Render Pages</title>
-    <meta name="description" content="Welcome to the Shipyard - Choose a category to view renders">
-    <meta property="og:title" content="{{ config('app.name', 'Laravel') }} - Render Pages">
-    <meta property="og:description" content="Welcome to the Shipyard - Choose a category to view renders">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ route('render.index') }}">
+    <title>User Renders - {{ config('app.name', 'Laravel') }}</title>
+    <meta name="description" content="View user-submitted renders">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
@@ -33,28 +29,42 @@
         </div>
         <div class="render-index-container">
             <div class="render-index-header">
-                <h1 class="render-index-title">Welcome to the Shipyard</h1>
-                <p class="render-index-subtitle">Choose a category to view renders</p>
-                <a href="{{ route('user-renders.index') }}" class="btn-primary" style="margin-top: 20px;">
-                    <i class="ri-image-add-line"></i> User Renders
+                <h1 class="render-index-title">User Renders</h1>
+                <p class="render-index-subtitle">Renders submitted by users</p>
+                <a href="{{ route('user-renders.create') }}" class="btn-primary" style="margin-top: 20px;">
+                    <i class="ri-upload-cloud-2-line"></i> Upload Your Render
                 </a>
             </div>
-            @if ($pages->isEmpty())
+            @if ($renders->isEmpty())
                 <div class="render-index-empty">
-                    <p>No render pages available.</p>
+                    <p>No approved user renders yet.</p>
                 </div>
             @else
-                <div class="render-index-grid">
-                    @foreach ($pages as $page)
-                        <a href="{{ route('render.page', $page->slug) }}" class="render-index-card">
+                <div class="render-index-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                    @foreach ($renders as $render)
+                        <a href="{{ route('user-renders.show', $render) }}" class="render-index-card">
+                            <div class="render-index-card__image"
+                                style="width: 100%; height: 200px; overflow: hidden; border-radius: 8px 8px 0 0;">
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($render->image) }}"
+                                    alt="{{ $render->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                             <div class="render-index-card__content">
-                                <h2 class="render-index-card__title">{{ $page->name }}</h2>
-                                @if ($page->description)
-                                    <p class="render-index-card__description">{{ $page->description }}</p>
+                                <h2 class="render-index-card__title">{{ $render->name }}</h2>
+                                @if ($render->description)
+                                    <p class="render-index-card__description">
+                                        {{ \Illuminate\Support\Str::limit($render->description, 100) }}</p>
+                                @endif
+                                @if ($render->user)
+                                    <p style="font-size: 0.875rem; color: #888; margin-top: 8px;">
+                                        Author: {{ $render->user->name }}
+                                    </p>
                                 @endif
                             </div>
                         </a>
                     @endforeach
+                </div>
+                <div style="margin-top: 40px; display: flex; justify-content: center;">
+                    {{ $renders->links() }}
                 </div>
             @endif
         </div>
