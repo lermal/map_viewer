@@ -52,6 +52,12 @@
                             </div>
                         </a>
                     @endforeach
+                    <a href="{{ route('user-renders.index') }}" class="render-index-card">
+                        <div class="render-index-card__content">
+                            <h2 class="render-index-card__title">User Renders</h2>
+                            <p class="render-index-card__description">Renders submitted by users</p>
+                        </div>
+                    </a>
                 </div>
             @endif
         </div>
