@@ -13,37 +13,20 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 Route::get('/api/shuttles/get', [ShuttleApiController::class, 'getShuttles'])->name('api.shuttles.get');
 
-Route::get('/images/renders/{image}', function (string $image) {
-    $imageLower = strtolower($image);
-    $imageName = pathinfo($imageLower, PATHINFO_FILENAME);
-
-    $possiblePaths = [
-        "renders/shuttles/{$imageName}.png",
-        "renders/shuttles/{$imageName}.webp",
-        "renders/shuttles/{$imageLower}",
-    ];
-
-    foreach ($possiblePaths as $imagePath) {
-        if (Storage::disk('public')->exists($imagePath)) {
-            return Storage::disk('public')->response($imagePath);
-        }
-    }
-
-    abort(404);
-})->where('image', '.*')->name('images.renders.shuttles');
-
 Route::get('/images/renders/{shuttle}/{image}', function (string $shuttle, string $image) {
     $shuttleLower = strtolower($shuttle);
+    $imageName = pathinfo($image, PATHINFO_FILENAME);
+    
+    if (str_starts_with($imageName, $shuttleLower . '-')) {
+        $possiblePaths = [
+            "renders/shuttles/{$shuttleLower}.png",
+            "renders/shuttles/{$shuttleLower}.webp",
+        ];
 
-    $possiblePaths = [
-        "renders/shuttles/{$shuttleLower}.png",
-        "renders/shuttles/{$shuttleLower}.webp",
-        "renders/shuttles/{$image}",
-    ];
-
-    foreach ($possiblePaths as $imagePath) {
-        if (Storage::disk('public')->exists($imagePath)) {
-            return Storage::disk('public')->response($imagePath);
+        foreach ($possiblePaths as $imagePath) {
+            if (Storage::disk('public')->exists($imagePath)) {
+                return Storage::disk('public')->response($imagePath);
+            }
         }
     }
 
