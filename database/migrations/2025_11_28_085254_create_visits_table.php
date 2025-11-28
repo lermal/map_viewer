@@ -20,7 +20,6 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->timestamps();
 
-            $table->index(['visitable_type', 'visitable_id']);
             $table->index('route_name');
             $table->index('created_at');
         });
