@@ -12,8 +12,7 @@
     @if (isset($item['description']))
         <meta property="og:description" content="{{ $item['description'] }}">
     @endif
-    <meta property="og:image"
-        content="{{ route('images.renders', ['shuttle' => $item['id'], 'image' => $item['image']]) }}">
+    <meta property="og:image" content="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ route('render.show', [$page->slug, $item['id']]) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -100,8 +99,7 @@
             </div>
             <div class="render-viewer__image-container">
                 <img class="render-viewer__image"
-                    src="{{ route('images.renders', ['shuttle' => $item['id'], 'image' => $item['image']]) }}"
-                    alt="{{ $item['name'] }}">
+                    src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}" alt="{{ $item['name'] }}">
             </div>
         </div>
         <div class="render-info-panel">
