@@ -15,7 +15,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/user-renders', [UserRenderController::class, 'index'])->name('user-renders.index');
 Route::get('/user-renders/create', [UserRenderController::class, 'create'])->name('user-renders.create');
 Route::post('/user-renders', [UserRenderController::class, 'store'])->name('user-renders.store');
-Route::get('/user-renders/{userRender}', [UserRenderController::class, 'show'])->name('user-renders.show');
+Route::get('/user-renders/{slug}', [UserRenderController::class, 'show'])->name('user-renders.show')->where('slug', '[a-zA-Z0-9]{32}');
 
 Route::get('/api/shuttles/get', [ShuttleApiController::class, 'getShuttles'])->name('api.shuttles.get');
 

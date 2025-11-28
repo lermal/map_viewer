@@ -35,9 +35,6 @@
             <div class="render-index-header">
                 <h1 class="render-index-title">Welcome to the Shipyard</h1>
                 <p class="render-index-subtitle">Choose a category to view renders</p>
-                <a href="{{ route('user-renders.index') }}" class="btn-primary" style="margin-top: 20px;">
-                    <i class="ri-image-add-line"></i> User Renders
-                </a>
             </div>
             @if ($pages->isEmpty())
                 <div class="render-index-empty">
@@ -55,6 +52,12 @@
                             </div>
                         </a>
                     @endforeach
+                    <a href="{{ route('user-renders.index') }}" class="render-index-card">
+                        <div class="render-index-card__content">
+                            <h2 class="render-index-card__title">User Renders</h2>
+                            <p class="render-index-card__description">Renders submitted by users</p>
+                        </div>
+                    </a>
                 </div>
             @endif
         </div>

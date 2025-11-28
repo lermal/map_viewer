@@ -7,6 +7,7 @@ use App\Models\UserRender;
 use App\Services\VisitTrackerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserRenderController extends Controller
 {
@@ -23,36 +24,61 @@ class UserRenderController extends Controller
     {
         $imagePath = $request->file('image')->store('user-renders', 'public');
 
-        UserRender::create([
+        do {
+            $slug = Str::random(32);
+        } while (UserRender::where('slug', $slug)->exists());
+
+        $userRender = UserRender::create([
             'user_id' => auth()->id(),
             'name' => $request->name,
+            'slug' => $slug,
             'image' => $imagePath,
             'description' => $request->description,
             'status' => 'pending',
             'is_public' => $request->boolean('is_public'),
         ]);
 
-        return redirect()->route('user-renders.create')
-            ->with('success', 'Render uploaded successfully and is awaiting moderation.');
+        $myRenders = $request->session()->get('my_renders', []);
+        $myRenders[] = [
+            'slug' => $slug,
+            'name' => $request->name,
+            'created_at' => now()->toDateTimeString(),
+        ];
+        $request->session()->put('my_renders', $myRenders);
+
+        return redirect()->route('user-renders.show', $userRender)
+            ->with('success', 'Render uploaded successfully! Your render is now available via direct link and is awaiting moderation.');
     }
 
     public function index(Request $request)
     {
         $this->visitTracker->track($request);
 
-        $renders = UserRender::where('status', 'approved')
-            ->where('is_public', true)
-            ->latest()
-            ->paginate(24);
+        $query = UserRender::where('status', 'approved')
+            ->where('is_public', true);
 
-        return view('user-renders.index', compact('renders'));
+        if ($request->has('search') && $request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $renders = $query->latest()->paginate(24)->withQueryString();
+
+        $myRendersSlugs = $request->session()->get('my_renders', []);
+        $myRenders = collect();
+
+        if (!empty($myRendersSlugs)) {
+            $slugs = array_column($myRendersSlugs, 'slug');
+            $myRenders = UserRender::whereIn('slug', $slugs)
+                ->latest()
+                ->get();
+        }
+
+        return view('user-renders.index', compact('renders', 'myRenders'));
     }
 
-    public function show(Request $request, UserRender $userRender)
+    public function show(Request $request, string $slug)
     {
-        if ($userRender->status !== 'approved' || ! $userRender->is_public) {
-            abort(404);
-        }
+        $userRender = UserRender::where('slug', $slug)->firstOrFail();
 
         $this->visitTracker->track($request);
 

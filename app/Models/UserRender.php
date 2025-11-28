@@ -10,6 +10,7 @@ class UserRender extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'slug',
         'image',
         'description',
         'status',
@@ -21,6 +22,11 @@ class UserRender extends Model
         return [
             'is_public' => 'boolean',
         ];
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 
     public function user(): BelongsTo

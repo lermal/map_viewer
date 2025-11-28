@@ -76,6 +76,13 @@ class UserRendersTable
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([
+                Action::make('view')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(fn (UserRender $record): string => route('user-renders.show', $record->slug))
+                    ->openUrlInNewTab(),
+
                 Action::make('approve')
                     ->label('Approve')
                     ->icon('heroicon-o-check-circle')
