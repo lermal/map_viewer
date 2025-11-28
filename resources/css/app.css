@@ -530,15 +530,6 @@ body {
         gap: 6px;
     }
 
-    .dropdown-content {
-        width: calc(100vw - 10px);
-        max-width: calc(100vw - 10px);
-        margin: 5px;
-        padding: 8px;
-        left: 5px !important;
-        right: 5px !important;
-    }
-
     .checkbox-text {
         font-size: 13px;
         padding-left: 22px;
