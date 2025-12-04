@@ -61,7 +61,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        const searchQuery = renderSearchInput ? renderSearchInput.value.trim().toLowerCase() : "";
+        const searchQuery = renderSearchInput
+            ? renderSearchInput.value.trim().toLowerCase()
+            : "";
 
         let visibleCount = 0;
         const visibleItems = [];
