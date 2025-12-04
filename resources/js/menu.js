@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const filterCheckboxes = document.querySelectorAll(".render-filter");
     const noResultsMessage = document.getElementById("no-results-message");
     const pageSlug = window.pageSlug || "";
+    const renderSearchInput = document.getElementById("render-search");
 
     if (renderToggle && dropdownContent) {
         renderToggle.addEventListener("click", function () {
@@ -60,6 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
+        const searchQuery = renderSearchInput ? renderSearchInput.value.trim().toLowerCase() : "";
+
         let visibleCount = 0;
         const visibleItems = [];
 
@@ -88,6 +91,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         shouldShow = false;
                         break;
                     }
+                }
+            }
+
+            if (shouldShow && searchQuery) {
+                const itemName = item.getAttribute("data-name") || "";
+                const itemDescription = item.getAttribute("data-description") || "";
+                const itemCategory = item.getAttribute("data-category") || "";
+                
+                const searchableText = `${itemName} ${itemDescription} ${itemCategory}`.toLowerCase();
+                if (!searchableText.includes(searchQuery)) {
+                    shouldShow = false;
                 }
             }
 
@@ -202,6 +216,10 @@ document.addEventListener("DOMContentLoaded", function () {
     filterCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", applyFilters);
     });
+
+    if (renderSearchInput) {
+        renderSearchInput.addEventListener("input", applyFilters);
+    }
 
     applyFilters();
 

@@ -55,6 +55,10 @@
                 @endif
             </div>
             <div class="dropdown-content">
+                <div class="render-search-container">
+                    <input type="text" id="render-search" class="render-search-input" placeholder="Поиск рендеров...">
+                    <i class="ri-search-line render-search-icon"></i>
+                </div>
                 <div id="no-results-message" style="display: none; text-align: center; padding: 20px; color: #f2f4f1;">
                     No renders found matching the selected filters
                 </div>
