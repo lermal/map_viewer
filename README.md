@@ -2,6 +2,8 @@
 
 Web application for viewing renders from the Space Station 14 game. Allows developers to upload and manage render collections through an admin panel, and users to view them with convenient filtering and panoramic viewing.
 
+Author: [Danila Nazarenko](https://forged.by)
+
 ## About the Project
 
 Space Station 14 Render Viewer is a system for organizing and viewing renders from the Space Station 14 game. The project provides:
