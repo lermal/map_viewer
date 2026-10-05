@@ -1357,3 +1357,37 @@ body {
         top: 60px;
     }
 }
+
+.site-credit {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 90;
+    padding: 6px 12px;
+    background-color: rgba(36, 36, 36, 0.8);
+    color: #a29778;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    clip-path: polygon(
+        0 0,
+        calc(100% - 6px) 0,
+        100% 6px,
+        100% 100%,
+        6px 100%,
+        0 calc(100% - 6px)
+    );
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.site-credit:hover {
+    color: #f2f4f1;
+    background-color: rgba(36, 36, 36, 0.95);
+}
+
+@media (max-width: 640px) {
+    body:has(.render-info-panel) .site-credit {
+        bottom: 78px;
+    }
+}

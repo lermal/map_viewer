@@ -20,3 +20,4 @@
         </nav>
     </nav>
 </header>
+<a class="site-credit" href="https://forged.by/projects/shipyard-mapviewer" target="_blank" rel="noopener noreferrer">Developed by Forged</a>
