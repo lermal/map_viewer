@@ -149,6 +149,24 @@ class RenderPageService
         return $filters;
     }
 
+    private const GROUP_NAMES = [
+        'Shipyard' => 'Civilian Vessels',
+        'Security' => 'NSFD Fleet',
+        'BlackMarket' => 'Pirate Fleet',
+        'Sr' => 'Frontier Outpost Vessel',
+        'Scrap' => 'Scrapyard Fleet',
+        'Custom' => 'Mothership Fleet',
+        'Expedition' => 'Expedition Vessels',
+    ];
+
+    /**
+     * Name of a catalog group as shown in the menu, e.g. "BlackMarket" → "Pirate Fleet".
+     */
+    public function groupDisplayName(string $group): string
+    {
+        return self::GROUP_NAMES[$group] ?? $this->splitCamelCase($group);
+    }
+
     private function splitCamelCase(string $text): string
     {
         return preg_replace('/([a-z])([A-Z])/', '$1 $2', $text);
@@ -156,16 +174,6 @@ class RenderPageService
 
     public function generateCategories(array $items): array
     {
-        $categoryNameMap = [
-            'Shipyard' => 'Civilian Vessels',
-            'Security' => 'NSFD Fleet',
-            'BlackMarket' => 'Pirate Fleet',
-            'Sr' => 'Frontier Outpost Vessel',
-            'Scrap' => 'Scrapyard Fleet',
-            'Custom' => 'Mothership Fleet',
-            'Expedition' => 'Expedition Vessels',
-        ];
-
         $categoryOrder = [
             'Shipyard' => 1,
             'Medical' => 2,
@@ -209,11 +217,7 @@ class RenderPageService
                     $displayName = $letter;
                     $order = 1000 + ord($letter);
                 } else {
-                    if (isset($categoryNameMap[$groupName])) {
-                        $displayName = $categoryNameMap[$groupName];
-                    } else {
-                        $displayName = $this->splitCamelCase($groupName);
-                    }
+                    $displayName = $this->groupDisplayName($groupName);
                     $order = $categoryOrder[$groupName] ?? 999;
                 }
                 $categories[$groupName] = [

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RenderPage;
+use App\Services\PageMetaService;
 use App\Services\RenderPageService;
 use App\Services\VisitTrackerService;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ class RenderController extends Controller
 {
     public function __construct(
         protected RenderPageService $renderPageService,
-        protected VisitTrackerService $visitTracker
+        protected VisitTrackerService $visitTracker,
+        protected PageMetaService $pageMeta
     ) {}
 
     public function index(Request $request)
@@ -22,7 +24,9 @@ class RenderController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return view('render.index', compact('pages'));
+        $meta = $this->pageMeta->home();
+
+        return view('render.index', compact('pages', 'meta'));
     }
 
     public function page(Request $request, string $slug)
@@ -38,7 +42,9 @@ class RenderController extends Controller
         $filters = $this->renderPageService->generateFilters($items);
         $categories = $this->renderPageService->generateCategories($items);
 
-        return view('render.page', compact('page', 'items', 'filters', 'categories', 'data'));
+        $meta = $this->pageMeta->category($page, $items);
+
+        return view('render.page', compact('page', 'items', 'filters', 'categories', 'data', 'meta'));
     }
 
     public function show(Request $request, string $slug, string $id)
@@ -61,7 +67,8 @@ class RenderController extends Controller
         $categories = $this->renderPageService->generateCategories($items);
         $additionalFields = $this->renderPageService->getAdditionalFields($item);
         $imageUrl = $this->renderPageService->imageUrl($data, $item);
+        $meta = $this->pageMeta->item($page, $item, $imageUrl);
 
-        return view('render.show', compact('page', 'item', 'additionalFields', 'data', 'items', 'filters', 'categories', 'imageUrl'));
+        return view('render.show', compact('page', 'item', 'additionalFields', 'data', 'items', 'filters', 'categories', 'imageUrl', 'meta'));
     }
 }

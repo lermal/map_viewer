@@ -2,29 +2,15 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $page->meta_title ?? $page->name }} - {{ config('app.name', 'Laravel') }}</title>
-    @if ($page->meta_description)
-        <meta name="description" content="{{ $page->meta_description }}">
-    @endif
-    <meta property="og:title" content="{{ $page->meta_title ?? $page->name }} - {{ config('app.name', 'Laravel') }}">
-    @if ($page->meta_description)
-        <meta property="og:description" content="{{ $page->meta_description }}">
-    @elseif ($page->description)
-        <meta property="og:description" content="{{ $page->description }}">
-    @endif
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ route('render.page', $page->slug) }}">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-page-head :title="$meta['title']" :description="$meta['description']" :canonical="$meta['canonical']"
+        :image="$meta['image'] ?? null" :large-image="$meta['largeImage'] ?? false" :json-ld="$meta['jsonLd']" />
 </head>
 
 <body>
     @include('header')
     <main style="margin-top: 90px; position: relative; z-index: 1;">
         @include('background')
+        <h1 class="visually-hidden">{{ $page->name }} of Frontier Station 14</h1>
         <div class="dropdown" style="position: relative; z-index: 10;">
             <div class="dropbtn__container">
                 <button class="dropbtn btn-primary render-toggle"><x-ri name="corner-left-down-line" /> Select
@@ -73,12 +59,13 @@
                                 <li class="shuttle-item render-item" data-id="{{ $item['id'] }}"
                                     data-name="{{ $item['name'] }}"
                                     @if (isset($item['category'])) data-category="{{ $item['category'] }}" @endif
-                                    @if (isset($item['description'])) data-description="{{ $item['description'] }}" @endif
                                     @foreach ($filters as $filterName => $filterValues)
                                             @if (isset($item[$filterName]))
                                                 data-{{ $filterName }}="{{ is_array($item[$filterName]) ? implode(', ', $item[$filterName]) : $item[$filterName] }}"
                                             @endif @endforeach>
-                                    <div class="shuttle-name">{{ $item['name'] }}</div>
+                                    <a class="shuttle-link" href="{{ route('render.show', [$page->slug, $item['id']]) }}">
+                                        <div class="shuttle-name">{{ $item['name'] }}</div>
+                                    </a>
                                 </li>
                             @endforeach
                         </ul>
@@ -87,9 +74,6 @@
             </div>
         </div>
     </main>
-    <script>
-        window.pageSlug = '{{ $page->slug }}';
-    </script>
 </body>
 
 </html>

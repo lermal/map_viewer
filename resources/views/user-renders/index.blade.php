@@ -2,14 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>User Renders - {{ config('app.name', 'Laravel') }}</title>
-    <meta name="description" content="View user-submitted renders">
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-page-head :title="'User Renders - '.config('app.name', 'Shipyard')" description="View user-submitted renders" robots="noindex, nofollow" />
 </head>
 
 <body>

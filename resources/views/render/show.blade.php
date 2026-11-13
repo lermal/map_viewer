@@ -2,24 +2,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $item['name'] }} - {{ config('app.name', 'Laravel') }}</title>
-    @if (isset($item['description']))
-        <meta name="description" content="{{ $item['description'] }}">
-    @endif
-    <meta property="og:title" content="{{ $item['name'] }} - {{ config('app.name', 'Laravel') }}">
-    @if (isset($item['description']))
-        <meta property="og:description" content="{{ $item['description'] }}">
-    @endif
-    @if ($imageUrl)
-        <meta property="og:image" content="{{ $imageUrl }}">
-    @endif
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ route('render.show', [$page->slug, $item['id']]) }}">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-page-head :title="$meta['title']" :description="$meta['description']" :canonical="$meta['canonical']"
+        :image="$meta['image'] ?? null" :large-image="$meta['largeImage'] ?? false" :json-ld="$meta['jsonLd']" />
 </head>
 
 <body>
@@ -113,12 +97,14 @@
                                 <li class="shuttle-item render-item" data-id="{{ $categoryItem['id'] }}"
                                     data-name="{{ $categoryItem['name'] }}"
                                     @if (isset($categoryItem['category'])) data-category="{{ $categoryItem['category'] }}" @endif
-                                    @if (isset($categoryItem['description'])) data-description="{{ $categoryItem['description'] }}" @endif
                                     @foreach ($filters as $filterName => $filterValues)
                                             @if (isset($categoryItem[$filterName]))
                                                 data-{{ $filterName }}="{{ is_array($categoryItem[$filterName]) ? implode(', ', $categoryItem[$filterName]) : $categoryItem[$filterName] }}"
                                             @endif @endforeach>
-                                    <div class="shuttle-name">{{ $categoryItem['name'] }}</div>
+                                    <a class="shuttle-link" href="{{ route('render.show', [$page->slug, $categoryItem['id']]) }}"
+                                        @if ($categoryItem['id'] === $item['id']) aria-current="page" @endif>
+                                        <div class="shuttle-name">{{ $categoryItem['name'] }}</div>
+                                    </a>
                                 </li>
                             @endforeach
                         </ul>
@@ -157,7 +143,7 @@
         @endif
         <div class="render-info-panel">
             <div class="render-info-panel__header">
-                <h2 class="render-info-panel__title">{{ $item['name'] }}</h2>
+                <h1 class="render-info-panel__title">{{ $item['name'] }}</h1>
                 @if (isset($item['price']) && $item['price'] > 0)
                     <div class="render-info-panel__price">
                         {{ number_format($item['price'], 0, '.', ' ') }}
@@ -217,8 +203,6 @@
         </div>
     </main>
     <script>
-        window.pageSlug = '{{ $page->slug }}';
-
         const renderImage = document.querySelector('.render-viewer__image');
         const renderLoader = document.getElementById('render-loader');
 

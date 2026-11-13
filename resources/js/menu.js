@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const renderItems = document.querySelectorAll(".render-item");
     const filterCheckboxes = document.querySelectorAll(".render-filter");
     const noResultsMessage = document.getElementById("no-results-message");
-    const pageSlug = window.pageSlug || "";
     const renderSearchInput = document.getElementById("render-search");
 
     if (renderToggle && dropdownContent) {
@@ -219,15 +218,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     applyFilters();
-
-    renderItems.forEach((item) => {
-        item.addEventListener("click", function () {
-            const itemId = this.getAttribute("data-id");
-            if (itemId && pageSlug) {
-                window.location.href = `/render/${pageSlug}/${itemId}`;
-            }
-        });
-    });
 
     document.addEventListener("click", function (event) {
         if (

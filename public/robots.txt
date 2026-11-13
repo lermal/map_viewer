@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /api/
+Disallow: /user-renders/create
+
+Sitemap: https://shipyard.frontierstation14.com/sitemap.xml

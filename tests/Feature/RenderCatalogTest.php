@@ -91,7 +91,7 @@ it('shows a placeholder and no og:image when an item has neither map nor image',
         ->assertDontSee('Render is being prepared');
 
     $this->get(route('render.show', [$this->page->slug, 'Beta']))->assertOk()
-        ->assertDontSee('property="og:image"', false)
+        ->assertSee('<meta property="og:image" content="'.asset('images/Logo.png').'">', false)
         ->assertDontSee('class="render-viewer__image"', false)
         ->assertDontSee('data-fallback-src', false)
         ->assertSee('Render is being prepared');

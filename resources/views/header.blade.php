@@ -1,10 +1,9 @@
 <header>
     <nav class="navigation">
         <nav class="navbar">
-            <div class="navbar-brand">
-                <img src="https://shipyard.frontierstation14.com/images/Logo.webp" alt="Frontier Station" width="140"
-                    height="62.06">
-            </div>
+            <a class="navbar-brand" href="{{ route('render.index') }}" aria-label="Shipyard home">
+                <img src="{{ asset('images/Logo.webp') }}" alt="Frontier Station" width="140" height="62">
+            </a>
             <button class="navbar-toggle" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
