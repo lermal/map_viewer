@@ -133,10 +133,9 @@ document.addEventListener("DOMContentLoaded", function () {
             category.style.display = "";
         });
 
-        if (visibleCount === 0) {
-            noResultsMessage.style.display = "block";
-        } else {
-            noResultsMessage.style.display = "none";
+        // the message exists only on pages with a render list
+        if (noResultsMessage) {
+            noResultsMessage.style.display = visibleCount === 0 ? "block" : "none";
         }
 
         updateFilterAvailability(visibleItems, activeFilters);
