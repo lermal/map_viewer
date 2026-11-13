@@ -22,8 +22,5 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-.cursor/mcp.json
-/.cursor
 .editorconfig
-/.junie
 .osp/project.ini
