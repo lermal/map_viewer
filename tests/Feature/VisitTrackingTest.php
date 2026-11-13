@@ -6,6 +6,8 @@ use App\Models\VisitDailyStat;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+const VISITS_MIGRATION = 'database/migrations/2026_11_13_000000_harden_visits_table.php';
+
 const BROWSER = ['User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'];
 
 function visitAt(string $ip, $at): void
@@ -87,7 +89,7 @@ it('builds the dashboard numbers from daily totals and today with at most three 
 });
 
 it('migrates existing visits without losing any', function () {
-    $this->artisan('migrate:rollback', ['--step' => 1])->assertSuccessful();
+    $this->artisan('migrate:rollback', ['--path' => VISITS_MIGRATION])->assertSuccessful();
     DB::table('visits')->insert([
         ['route_name' => 'render.page', 'url' => 'https://example.test/render/shuttles?utm='.str_repeat('y', 200), 'ip_address' => '10.0.0.1', 'user_agent' => 'Firefox', 'created_at' => now(), 'updated_at' => now()],
         ['route_name' => 'render.index', 'url' => 'https://example.test', 'ip_address' => '10.0.0.2', 'user_agent' => null, 'created_at' => now(), 'updated_at' => now()],
@@ -100,7 +102,7 @@ it('migrates existing visits without losing any', function () {
 });
 
 it('finishes the migration when a previous run was interrupted halfway', function () {
-    $this->artisan('migrate:rollback', ['--step' => 1])->assertSuccessful();
+    $this->artisan('migrate:rollback', ['--path' => VISITS_MIGRATION])->assertSuccessful();
     DB::table('visits')->insert([
         ['route_name' => 'render.index', 'url' => 'https://example.test/?a=1', 'ip_address' => '10.0.0.3', 'user_agent' => null, 'created_at' => now(), 'updated_at' => now()],
     ]);

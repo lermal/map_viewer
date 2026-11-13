@@ -46,6 +46,11 @@
 
             <form action="{{ route('user-renders.store') }}" method="POST" enctype="multipart/form-data" class="user-render-form">
                 @csrf
+                <input type="hidden" name="form_token" value="{{ encrypt(now()->timestamp) }}">
+                <div style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
+                    <label for="website">Website</label>
+                    <input type="text" id="website" name="website" value="" tabindex="-1" autocomplete="off">
+                </div>
 
                 <div class="form-group">
                     <label for="name" class="form-label">
@@ -60,7 +65,7 @@
                     </label>
                     <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/webp" required class="form-input">
                     <p class="form-help">
-                        Maximum size: 10 MB. Formats: JPEG, PNG, WebP
+                        Maximum size: 10 MB, {{ intdiv(config('user-renders.max_pixels'), 1000000) }} megapixels, {{ config('user-renders.max_side') }} px per side. Formats: JPEG, PNG, WebP
                     </p>
                 </div>
 

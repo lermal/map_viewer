@@ -62,8 +62,9 @@
                             <a href="{{ route('user-renders.show', $render->slug) }}"
                                 class="render-index-card render-index-card--with-image">
                                 <div class="render-index-card__image">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($render->image) }}"
-                                        alt="{{ $render->name }}">
+                                    @if ($imageUrl = $render->imageUrl())
+                                        <img src="{{ $imageUrl }}" alt="{{ $render->name }}">
+                                    @endif
                                 </div>
                                 <div class="render-index-card__content render-index-card__content--no-top-clip">
                                     <h2 class="render-index-card__title">{{ $render->name }}</h2>
@@ -99,8 +100,9 @@
                         <a href="{{ route('user-renders.show', $render) }}"
                             class="render-index-card render-index-card--with-image">
                             <div class="render-index-card__image">
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($render->image) }}"
-                                    alt="{{ $render->name }}">
+                                @if ($imageUrl = $render->imageUrl())
+                                    <img src="{{ $imageUrl }}" alt="{{ $render->name }}">
+                                @endif
                             </div>
                             <div class="render-index-card__content render-index-card__content--no-top-clip">
                                 <h2 class="render-index-card__title">{{ $render->name }}</h2>

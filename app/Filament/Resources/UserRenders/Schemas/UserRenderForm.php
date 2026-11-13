@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserRenders\Schemas;
 
 use App\Models\User;
+use App\Models\UserRender;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -24,9 +25,24 @@ class UserRenderForm
                 FileUpload::make('image')
                     ->label('Image')
                     ->image()
-                    ->disk('public')
+                    // the model moves the file to the disk matching the status on save
+                    ->disk(fn (?UserRender $record): string => $record?->imageDisk() ?? UserRender::PRIVATE_DISK)
                     ->directory('user-renders')
-                    ->required()
+                    ->getUploadedFileUsing(function (FileUpload $component, string $file, ?UserRender $record): ?array {
+                        $disk = $component->getDisk();
+                        if (! $disk->exists($file)) {
+                            return null;
+                        }
+
+                        return [
+                            'name' => basename($file),
+                            'size' => $disk->size($file),
+                            'type' => $disk->mimeType($file),
+                            'url' => $record?->image === $file ? route('user-renders.image', $record->slug) : null,
+                        ];
+                    })
+                    // images of renders rejected long ago are removed by the daily cleanup
+                    ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxSize(10240),
 
                 Textarea::make('description')

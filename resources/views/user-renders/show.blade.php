@@ -9,7 +9,9 @@
     <meta name="robots" content="noindex, nofollow">
     <meta property="og:title" content="{{ $userRender->name }}">
     <meta property="og:description" content="{{ $userRender->description ?? $userRender->name }}">
-    <meta property="og:image" content="{{ \Illuminate\Support\Facades\Storage::url($userRender->image) }}">
+    @if ($imageUrl = $userRender->imageUrl())
+        <meta property="og:image" content="{{ $imageUrl }}">
+    @endif
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ route('user-renders.show', $userRender) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -34,15 +36,15 @@
                 style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
         </div>
         <div class="render-viewer">
-            <div class="render-viewer__loader" id="render-loader">
-                <div class="render-viewer__loader-spinner"></div>
-                <div class="render-viewer__loader-text">Loading render...</div>
-            </div>
-            <div class="render-viewer__image-container">
-                <img class="render-viewer__image"
-                    src="{{ \Illuminate\Support\Facades\Storage::url($userRender->image) }}"
-                    alt="{{ $userRender->name }}">
-            </div>
+            @if ($imageUrl)
+                <div class="render-viewer__loader" id="render-loader">
+                    <div class="render-viewer__loader-spinner"></div>
+                    <div class="render-viewer__loader-text">Loading render...</div>
+                </div>
+                <div class="render-viewer__image-container">
+                    <img class="render-viewer__image" src="{{ $imageUrl }}" alt="{{ $userRender->name }}">
+                </div>
+            @endif
         </div>
         <div class="render-info-panel">
             <div class="render-info-panel__header">

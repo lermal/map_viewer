@@ -16,9 +16,9 @@ Space Station 14 Render Viewer is a system for organizing and viewing renders fr
 
 ## Requirements
 
--   PHP 8.2 or higher
+-   PHP 8.4 or higher with the GD extension (WebP support)
 -   Composer
--   Node.js 18+ and npm
+-   Node.js 20.19+ (22 or 24 LTS recommended) and npm
 -   MySQL/MariaDB or other supported database
 -   Web server (Apache/Nginx) or PHP built-in server
 
@@ -148,7 +148,8 @@ php artisan serve
 ```
 
 4. Run the scheduler every minute (cron of the site user). It stores daily visit totals and removes
-   raw visits older than 90 days (`php artisan visits:aggregate`):
+   raw visits older than 90 days (`php artisan visits:aggregate`), and deletes images of user renders
+   rejected more than 7 days ago (`php artisan user-renders:cleanup`):
 
 ```cron
 * * * * * cd /path/to/site && php artisan schedule:run >> /dev/null 2>&1

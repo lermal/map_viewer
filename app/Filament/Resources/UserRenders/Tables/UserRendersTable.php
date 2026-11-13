@@ -20,7 +20,8 @@ class UserRendersTable
         return $table
             ->columns([
                 ImageColumn::make('image')
-                    ->disk('public')
+                    // pending and rejected images are private; the secret link serves them to administrators
+                    ->state(fn (UserRender $record): ?string => $record->image ? route('user-renders.image', $record->slug) : null)
                     ->circular()
                     ->size(60),
 
