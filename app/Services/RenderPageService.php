@@ -2,36 +2,115 @@
 
 namespace App\Services;
 
+use App\Exceptions\CatalogUnavailableException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class RenderPageService
 {
+    /**
+     * Catalog data for a page. A missing or broken file falls back to the last version that loaded,
+     * so a bad publish never takes the page down.
+     *
+     * @throws CatalogUnavailableException when no version of the file has ever loaded
+     */
     public function loadJson(string $jsonPath): array
     {
-        $fullPath = storage_path("app/data/pages/{$jsonPath}");
+        $fullPath = $this->catalogPath($jsonPath);
+        $lastGoodKey = "render_page_json_last_{$jsonPath}";
 
         // The modification time is part of the key, so a freshly published catalog is used immediately.
-        $mtime = file_exists($fullPath) ? filemtime($fullPath) : 0;
-        $cacheKey = "render_page_json_{$jsonPath}_{$mtime}";
+        $mtime = $this->mtime($fullPath);
 
-        return Cache::remember($cacheKey, 3600, function () use ($jsonPath, $fullPath) {
-            if (! file_exists($fullPath)) {
-                throw new \RuntimeException("JSON file not found: {$jsonPath}");
+        try {
+            if ($mtime === null) {
+                throw new RuntimeException("JSON file not found: {$jsonPath}");
             }
 
-            $content = file_get_contents($fullPath);
-            $data = json_decode($content, true);
+            return Cache::remember("render_page_json_{$jsonPath}_{$mtime}", 3600, function () use ($fullPath, $lastGoodKey) {
+                $data = $this->readCatalog($fullPath);
+                Cache::forever($lastGoodKey, $data);
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \RuntimeException('Invalid JSON: '.json_last_error_msg());
-            }
+                return $data;
+            });
+        } catch (RuntimeException $e) {
+            Log::error("Catalog {$jsonPath} could not be loaded: {$e->getMessage()}");
+        }
 
-            if (! $this->validateJsonStructure($data)) {
-                throw new \RuntimeException('Invalid JSON structure');
-            }
+        return Cache::get($lastGoodKey) ?? throw new CatalogUnavailableException($jsonPath);
+    }
 
-            return $data;
-        });
+    /**
+     * Modification time of the catalog file, or null when it does not exist.
+     */
+    public function catalogMtime(string $jsonPath): ?int
+    {
+        return $this->mtime($this->catalogPath($jsonPath));
+    }
+
+    /**
+     * Public URL of an item's preview image with its modification time as version,
+     * so caches pick up a re-rendered image at once. Null when the file does not exist.
+     */
+    public function imageUrl(array $data, array $item): ?string
+    {
+        $relative = $this->imagePath($data, $item);
+        $mtime = $this->imageMtime($data, $item);
+
+        return $mtime === null ? null : asset('storage/'.$relative).'?v='.$mtime;
+    }
+
+    /**
+     * Modification time of an item's preview image, or null when it does not exist.
+     */
+    public function imageMtime(array $data, array $item): ?int
+    {
+        $relative = $this->imagePath($data, $item);
+
+        return $relative ? $this->mtime(storage_path('app/public/'.$relative)) : null;
+    }
+
+    private function imagePath(array $data, array $item): ?string
+    {
+        $image = $item['image'] ?? null;
+        if (! is_string($image) || $image === '' || str_contains($image, '..')) {
+            return null;
+        }
+
+        return ($data['renders_path'] ?? '').$image;
+    }
+
+    private function catalogPath(string $jsonPath): string
+    {
+        return storage_path("app/data/pages/{$jsonPath}");
+    }
+
+    private function mtime(string $path): ?int
+    {
+        clearstatcache(true, $path);
+
+        return is_file($path) ? (filemtime($path) ?: null) : null;
+    }
+
+    private function readCatalog(string $fullPath): array
+    {
+        $content = @file_get_contents($fullPath);
+        if ($content === false) {
+            throw new RuntimeException('File could not be read');
+        }
+
+        $data = json_decode($content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Invalid JSON: '.json_last_error_msg());
+        }
+
+        if (! is_array($data) || ! $this->validateJsonStructure($data)) {
+            throw new RuntimeException('Invalid JSON structure');
+        }
+
+        return $data;
     }
 
     public function generateFilters(array $items): array

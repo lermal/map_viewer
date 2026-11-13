@@ -28,6 +28,17 @@ function publish(file, content) {
     fs.renameSync(tmp, file);
 }
 
+/** Publish only when the content differs, so the file date tells when the data really changed. */
+function publishIfChanged(file, content) {
+    try {
+        if (fs.readFileSync(file, 'utf8') === content) return false;
+    } catch {
+        // not published yet
+    }
+    publish(file, content);
+    return true;
+}
+
 /** Keep the newest two published versions of an item (the page may still reference the previous one). */
 function prune(dir, stem) {
     if (!fs.existsSync(dir)) return;
@@ -111,7 +122,7 @@ for (const pageName of pages) {
         (categories[group] ??= []).push(record);
     }
     if (!only) {
-        publish(path.join(opt.storage, 'data', 'pages', page.file),
+        publishIfChanged(path.join(opt.storage, 'data', 'pages', page.file),
             JSON.stringify({ renders_path: page.rendersPath, categories }, null, 4));
     }
 }

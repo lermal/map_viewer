@@ -60,7 +60,8 @@ class RenderController extends Controller
         $filters = $this->renderPageService->generateFilters($items);
         $categories = $this->renderPageService->generateCategories($items);
         $additionalFields = $this->renderPageService->getAdditionalFields($item);
+        $imageUrl = $this->renderPageService->imageUrl($data, $item);
 
-        return view('render.show', compact('page', 'item', 'additionalFields', 'data', 'items', 'filters', 'categories'));
+        return view('render.show', compact('page', 'item', 'additionalFields', 'data', 'items', 'filters', 'categories', 'imageUrl'));
     }
 }

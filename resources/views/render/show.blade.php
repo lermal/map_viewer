@@ -12,7 +12,9 @@
     @if (isset($item['description']))
         <meta property="og:description" content="{{ $item['description'] }}">
     @endif
-    <meta property="og:image" content="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}">
+    @if ($imageUrl)
+        <meta property="og:image" content="{{ $imageUrl }}">
+    @endif
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ route('render.show', [$page->slug, $item['id']]) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -139,7 +141,7 @@
         </div>
         @if (!empty($item['map']))
             <div class="render-viewer" data-map-url="{{ asset('storage/' . $item['map']) }}"
-                data-fallback-src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}"
+                @if ($imageUrl) data-fallback-src="{{ $imageUrl }}" @endif
                 data-alt="{{ $item['name'] }}">
                 <div class="render-viewer__loader" id="render-loader">
                     <div class="render-viewer__loader-spinner"></div>
@@ -147,18 +149,22 @@
                 </div>
                 <canvas class="render-viewer__canvas" aria-label="{{ $item['name'] }}" role="img"></canvas>
                 <div class="render-viewer__image-container"></div>
+                @include('render.placeholder', ['hidden' => true])
             </div>
             <div class="render-hover" hidden></div>
-        @else
+        @elseif ($imageUrl)
             <div class="render-viewer">
                 <div class="render-viewer__loader" id="render-loader">
                     <div class="render-viewer__loader-spinner"></div>
                     <div class="render-viewer__loader-text">Loading render...</div>
                 </div>
                 <div class="render-viewer__image-container">
-                    <img class="render-viewer__image"
-                        src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}" alt="{{ $item['name'] }}">
+                    <img class="render-viewer__image" src="{{ $imageUrl }}" alt="{{ $item['name'] }}">
                 </div>
+            </div>
+        @else
+            <div class="render-viewer">
+                @include('render.placeholder', ['hidden' => false])
             </div>
         @endif
         <div class="render-info-panel">

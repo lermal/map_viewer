@@ -384,8 +384,12 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(() => {
                 mapCanvasEl.remove();
                 document.querySelector(".layers-toggle")?.remove();
-                if (renderViewer.dataset.fallbackSrc) showImage(renderViewer.dataset.fallbackSrc);
-                else window.hideRenderLoader?.();
+                if (renderViewer.dataset.fallbackSrc) {
+                    showImage(renderViewer.dataset.fallbackSrc);
+                } else {
+                    renderViewer.querySelector(".render-viewer__placeholder")?.removeAttribute("hidden");
+                    window.hideRenderLoader?.();
+                }
             });
     } else if (imageContainer && image) {
         startPanzoom(image);
