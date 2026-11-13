@@ -30,6 +30,9 @@
                     render</button>
                 <button class="dropbtn btn-primary filter-toggle"><i class="ri-filter-3-line"></i> Filter
                     renders</button>
+                @if (!empty($item['map']))
+                    <button class="dropbtn btn-primary layers-toggle"><i class="ri-stack-line"></i> Layers</button>
+                @endif
             </div>
             <div class="filter-dropdown">
                 @if (!empty($filters))
@@ -54,6 +57,43 @@
                     @endforeach
                 @endif
             </div>
+            @if (!empty($item['map']))
+                <div class="filter-dropdown layers-dropdown">
+                    <div class="dropdown-category">
+                        <strong class="group-name">Subfloor</strong>
+                        <hr>
+                        <ul class="shuttle-list">
+                            <li class="shuttle-item">
+                                <label class="checkbox-item"><input type="checkbox" data-layer="subfloor"><span
+                                        class="checkbox-text">Show subfloor</span></label>
+                            </li>
+                            <li class="shuttle-item">
+                                <label class="checkbox-item"><input type="checkbox" data-layer="subfloorOnTop"><span
+                                        class="checkbox-text">Above objects</span></label>
+                            </li>
+                        </ul>
+                        <ul class="shuttle-list layers-dropdown__kinds">
+                            @foreach (['hv' => 'HV cables', 'mv' => 'MV cables', 'lv' => 'LV cables', 'pipe' => 'Pipes', 'disposal' => 'Disposals', 'subfloor' => 'Other'] as $kind => $label)
+                                <li class="shuttle-item">
+                                    <label class="checkbox-item"><input type="checkbox" data-kind="{{ $kind }}" checked><span
+                                            class="checkbox-text">{{ $label }} <span class="layers-dropdown__count"
+                                                data-count="{{ $kind }}"></span></span></label>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div class="dropdown-category">
+                        <strong class="group-name">Power</strong>
+                        <hr>
+                        <ul class="shuttle-list">
+                            <li class="shuttle-item">
+                                <label class="checkbox-item"><input type="checkbox" data-layer="powered" checked><span
+                                        class="checkbox-text">Powered</span></label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            @endif
             <div class="dropdown-content">
                 <div class="render-search-container">
                     <input type="text" id="render-search" class="render-search-input"
@@ -97,16 +137,30 @@
             <div class="render-background__layer render-background__layer--meteors2"
                 style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
         </div>
-        <div class="render-viewer">
-            <div class="render-viewer__loader" id="render-loader">
-                <div class="render-viewer__loader-spinner"></div>
-                <div class="render-viewer__loader-text">Loading render...</div>
+        @if (!empty($item['map']))
+            <div class="render-viewer" data-map-url="{{ asset('storage/' . $item['map']) }}"
+                data-fallback-src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}"
+                data-alt="{{ $item['name'] }}">
+                <div class="render-viewer__loader" id="render-loader">
+                    <div class="render-viewer__loader-spinner"></div>
+                    <div class="render-viewer__loader-text">Loading render...</div>
+                </div>
+                <canvas class="render-viewer__canvas" aria-label="{{ $item['name'] }}" role="img"></canvas>
+                <div class="render-viewer__image-container"></div>
             </div>
-            <div class="render-viewer__image-container">
-                <img class="render-viewer__image"
-                    src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}" alt="{{ $item['name'] }}">
+            <div class="render-hover" hidden></div>
+        @else
+            <div class="render-viewer">
+                <div class="render-viewer__loader" id="render-loader">
+                    <div class="render-viewer__loader-spinner"></div>
+                    <div class="render-viewer__loader-text">Loading render...</div>
+                </div>
+                <div class="render-viewer__image-container">
+                    <img class="render-viewer__image"
+                        src="{{ asset('storage/' . $data['renders_path'] . $item['image']) }}" alt="{{ $item['name'] }}">
+                </div>
             </div>
-        </div>
+        @endif
         <div class="render-info-panel">
             <div class="render-info-panel__header">
                 <h2 class="render-info-panel__title">{{ $item['name'] }}</h2>
@@ -150,6 +204,16 @@
                         @endif
                     @endforeach
                 @endif
+                @if (!empty($item['map']))
+                    <div class="render-info-panel__field render-info-panel__attribution" hidden>
+                        <div class="render-info-panel__field-name">Sprites:</div>
+                        <div class="render-info-panel__field-value">
+                            <a href="https://github.com/new-frontiers-14/frontier-station-14" target="_blank"
+                                rel="noopener noreferrer">Space Station 14 / Frontier Station 14</a>
+                            <div class="render-info-panel__tags render-info-panel__licenses"></div>
+                        </div>
+                    </div>
+                @endif
             </div>
             @if (isset($item['description']) && !empty(trim($item['description'])))
                 <div class="render-info-panel__description">
@@ -179,6 +243,8 @@
                 }
             }, 500);
         }
+
+        window.hideRenderLoader = hideLoader;
 
         if (renderImage) {
             if (renderImage.complete) {

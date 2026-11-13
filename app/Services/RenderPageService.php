@@ -8,11 +8,13 @@ class RenderPageService
 {
     public function loadJson(string $jsonPath): array
     {
-        $cacheKey = "render_page_json_{$jsonPath}";
+        $fullPath = storage_path("app/data/pages/{$jsonPath}");
 
-        return Cache::remember($cacheKey, 3600, function () use ($jsonPath) {
-            $fullPath = storage_path("app/data/pages/{$jsonPath}");
+        // The modification time is part of the key, so a freshly published catalog is used immediately.
+        $mtime = file_exists($fullPath) ? filemtime($fullPath) : 0;
+        $cacheKey = "render_page_json_{$jsonPath}_{$mtime}";
 
+        return Cache::remember($cacheKey, 3600, function () use ($jsonPath, $fullPath) {
             if (! file_exists($fullPath)) {
                 throw new \RuntimeException("JSON file not found: {$jsonPath}");
             }
@@ -35,7 +37,7 @@ class RenderPageService
     public function generateFilters(array $items): array
     {
         $filters = [];
-        $excludedFields = ['id', 'name', 'image', 'description', 'price', '_jsonCategory'];
+        $excludedFields = ['id', 'name', 'image', 'description', 'price', 'map', '_jsonCategory'];
 
         foreach ($items as $item) {
             foreach ($item as $key => $value) {
@@ -208,7 +210,7 @@ class RenderPageService
 
     public function getAdditionalFields(array $item): array
     {
-        $excludedFields = ['id', 'name', 'image', 'description', 'price', 'category', '_jsonCategory'];
+        $excludedFields = ['id', 'name', 'image', 'description', 'price', 'category', 'map', '_jsonCategory'];
         $additionalFields = [];
 
         foreach ($item as $key => $value) {
