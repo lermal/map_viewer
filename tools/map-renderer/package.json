@@ -10,7 +10,7 @@
         "node": ">=18"
     },
     "dependencies": {
-        "js-yaml": "4.1.0",
+        "js-yaml": "4.3.2",
         "pngjs": "7.0.0"
     }
 }

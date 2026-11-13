@@ -40,7 +40,7 @@ composer install
 ### 3. Install Node.js dependencies
 
 ```bash
-npm install
+npm ci
 ```
 
 ### 4. Configure environment
@@ -158,6 +158,20 @@ php artisan serve
 
 Catalog pages, map render data and preview images are built from a Frontier Station 14 checkout by
 `tools/map-renderer`; see [tools/map-renderer/README.md](tools/map-renderer/README.md).
+
+### Updating dependencies
+
+Check for known vulnerabilities once a month and after every dependency change:
+
+```bash
+composer audit --locked
+npm audit
+(cd tools/map-renderer && npm audit)
+```
+
+`composer.lock` and both `package-lock.json` files are committed; on the server install exactly the locked
+versions with `composer install --no-dev` and `npm ci`, then run `php artisan filament:upgrade` and
+`npm run build`.
 
 ### Accessing the Admin Panel
 
