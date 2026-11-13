@@ -14,32 +14,54 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Every step checks the current state, so an interrupted run can simply be started again.
         Schema::table('visits', function (Blueprint $table) {
-            $table->string('path')->default('/')->after('route_name');
-            $table->string('ip_hash', 64)->nullable()->after('path');
+            if (! Schema::hasColumn('visits', 'path')) {
+                $table->string('path')->default('/')->after('route_name');
+            }
+            if (! Schema::hasColumn('visits', 'ip_hash')) {
+                $table->string('ip_hash', 64)->nullable()->after('path');
+            }
         });
 
-        // one update per distinct address / URL instead of one per visit
-        foreach (DB::table('visits')->select('ip_address')->distinct()->cursor() as $row) {
-            DB::table('visits')->where('ip_address', $row->ip_address)
-                ->update(['ip_hash' => Visit::hashIp((string) $row->ip_address)]);
+        if (Schema::hasColumn('visits', 'ip_address')) {
+            // temporary indexes: each update below becomes an index lookup instead of a full table scan
+            $indexes = collect(Schema::getIndexes('visits'))->pluck('name');
+            Schema::table('visits', function (Blueprint $table) use ($indexes) {
+                if (! $indexes->contains('tmp_visits_ip')) {
+                    $table->index('ip_address', 'tmp_visits_ip');
+                }
+                if (! $indexes->contains('tmp_visits_url')) {
+                    $table->index('url', 'tmp_visits_url');
+                }
+            });
+
+            // one update per distinct address / URL instead of one per visit
+            foreach (DB::table('visits')->whereNull('ip_hash')->select('ip_address')->distinct()->cursor() as $row) {
+                DB::table('visits')->where('ip_address', $row->ip_address)
+                    ->update(['ip_hash' => Visit::hashIp((string) $row->ip_address)]);
+            }
+            foreach (DB::table('visits')->select('url')->distinct()->cursor() as $row) {
+                DB::table('visits')->where('url', $row->url)
+                    ->update(['path' => Visit::pathFromUrl((string) $row->url)]);
+            }
+
+            Schema::table('visits', function (Blueprint $table) {
+                $table->dropIndex('tmp_visits_ip');
+                $table->dropIndex('tmp_visits_url');
+                $table->dropColumn(['url', 'ip_address', 'user_agent']);
+            });
         }
-        foreach (DB::table('visits')->select('url')->distinct()->cursor() as $row) {
-            DB::table('visits')->where('url', $row->url)
-                ->update(['path' => Visit::pathFromUrl((string) $row->url)]);
+
+        if (! Schema::hasTable('visit_daily_stats')) {
+            Schema::create('visit_daily_stats', function (Blueprint $table) {
+                $table->id();
+                $table->date('date')->unique();
+                $table->unsignedInteger('views');
+                $table->unsignedInteger('unique_visitors');
+                $table->timestamps();
+            });
         }
-
-        Schema::table('visits', function (Blueprint $table) {
-            $table->dropColumn(['url', 'ip_address', 'user_agent']);
-        });
-
-        Schema::create('visit_daily_stats', function (Blueprint $table) {
-            $table->id();
-            $table->date('date')->unique();
-            $table->unsignedInteger('views');
-            $table->unsignedInteger('unique_visitors');
-            $table->timestamps();
-        });
     }
 
     /**

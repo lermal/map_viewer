@@ -98,3 +98,22 @@ it('migrates existing visits without losing any', function () {
     expect(Visit::orderBy('id')->pluck('path')->all())->toBe(['/render/shuttles', '/'])
         ->and(Visit::orderBy('id')->pluck('ip_hash')->all())->toBe([Visit::hashIp('10.0.0.1'), Visit::hashIp('10.0.0.2')]);
 });
+
+it('finishes the migration when a previous run was interrupted halfway', function () {
+    $this->artisan('migrate:rollback', ['--step' => 1])->assertSuccessful();
+    DB::table('visits')->insert([
+        ['route_name' => 'render.index', 'url' => 'https://example.test/?a=1', 'ip_address' => '10.0.0.3', 'user_agent' => null, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+    // state left by an interrupted run: new columns and a manually added index already exist
+    Schema::table('visits', function ($table) {
+        $table->string('path')->default('/');
+        $table->string('ip_hash', 64)->nullable();
+        $table->index('ip_address', 'tmp_visits_ip');
+    });
+
+    $this->artisan('migrate')->assertSuccessful();
+
+    expect(Visit::sole()->ip_hash)->toBe(Visit::hashIp('10.0.0.3'))
+        ->and(Schema::hasColumn('visits', 'ip_address'))->toBeFalse()
+        ->and(Schema::hasTable('visit_daily_stats'))->toBeTrue();
+});

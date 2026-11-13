@@ -256,7 +256,7 @@ export function buildRenderData(game, mapFile) {
         const [g, lx, ly, lrot] = gridLocal(uid);
         const anchored = truthy(e.c.Transform?.anchored ?? false);
         const tx = Math.floor(lx), ty = Math.floor(ly);
-        info.set(uid, { g, lrot, anchored, tx, ty });
+        info.set(uid, { g, lx, ly, lrot, anchored, tx, ty });
         if (anchored && g !== null) {
             const k = `${g}|${tx}|${ty}`;
             if (!occ.has(k)) occ.set(k, []);
@@ -318,7 +318,7 @@ export function buildRenderData(game, mapFile) {
     // ---- per-entity layer emulation
     const entityLayers = (uid, e, powered) => {
         const c = e.c, sp = c.Sprite;
-        const { g, lrot, anchored, tx, ty } = info.get(uid);
+        const { g, lx, ly, lrot, anchored, tx, ty } = info.get(uid);
         const [wx, wy, wrot] = worldXf(uid);
         let baseRsi = sp.sprite;
         let layers = [];
@@ -415,6 +415,17 @@ export function buildRenderData(game, mapFile) {
                 const idx = actual >= max ? states.length - 1 : actual <= 0 ? 0 : Math.trunc((actual / max) * states.length);
                 setLayers(stack.baseLayer ?? '', { state: states[idx] });
             }
+        }
+
+        // thrusters glow while enabled: anchored, powered and, unless exempt, with open space behind the nozzle
+        // (ThrusterSystem.CanEnable / NozzleExposed); without that the server never sends the visual state
+        if (c.Thruster && powered && anchored && g !== null && truthy(c.Thruster.enabled ?? true)) {
+            let on = true;
+            if (truthy(c.Thruster.requireSpace ?? true)) {
+                const nx = Math.floor(lx - Math.sin(lrot)), ny = Math.floor(ly + Math.cos(lrot));
+                on = !gridTiles.get(g)?.has(`${nx},${ny}`);
+            }
+            if (on) setLayers('enum.ThrusterVisualLayers.ThrustOn', { visible: true });
         }
 
         if (c.ApcVisuals) {
@@ -552,7 +563,7 @@ export function buildRenderData(game, mapFile) {
         stats.entities++;
         const off = entityLayers(uid, e, false);
         const gv = c.GenericVisualizer?.visuals ?? {};
-        const on = POWER_KEYS.some((k) => k in gv) || c.ApcVisuals ? entityLayers(uid, e, true) : off;
+        const on = POWER_KEYS.some((k) => k in gv) || c.ApcVisuals || c.Thruster ? entityLayers(uid, e, true) : off;
         if (!off.length && !on.length) continue;
         const idx = entities.length;
         const emit = (rows, pw) => { for (const r of rows) sprites.push([...r.slice(0, 8), idx, r[8], pw, r[9]]); };
