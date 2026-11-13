@@ -11,14 +11,31 @@ class Visit extends Model
         'visitable_type',
         'visitable_id',
         'route_name',
-        'url',
-        'ip_address',
-        'user_agent',
+        'path',
+        'ip_hash',
     ];
 
     public function visitable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Keyed, irreversible hash of an IP address: unique visitors can be counted without storing the address.
+     */
+    public static function hashIp(string $ip): string
+    {
+        return hash_hmac('sha256', $ip, (string) config('app.key'));
+    }
+
+    /**
+     * Path of a URL without host and query string, limited to the column size.
+     */
+    public static function pathFromUrl(string $url): string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        return mb_substr(is_string($path) && $path !== '' ? $path : '/', 0, 255);
     }
 
     public function scopeToday($query)
@@ -46,6 +63,6 @@ class Visit extends Model
     {
         $baseQuery = $query ?? static::query();
 
-        return $baseQuery->distinct('ip_address')->count('ip_address');
+        return $baseQuery->distinct('ip_hash')->count('ip_hash');
     }
 }

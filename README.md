@@ -147,6 +147,18 @@ php artisan view:cache
 php artisan serve
 ```
 
+4. Run the scheduler every minute (cron of the site user). It stores daily visit totals and removes
+   raw visits older than 90 days (`php artisan visits:aggregate`):
+
+```cron
+* * * * * cd /path/to/site && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### Ship and POI data
+
+Catalog pages, map render data and preview images are built from a Frontier Station 14 checkout by
+`tools/map-renderer`; see [tools/map-renderer/README.md](tools/map-renderer/README.md).
+
 ### Accessing the Admin Panel
 
 After creating a user, the admin panel is available at:
