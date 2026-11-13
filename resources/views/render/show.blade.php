@@ -19,7 +19,6 @@
     <meta property="og:url" content="{{ route('render.show', [$page->slug, $item['id']]) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -28,12 +27,12 @@
     <main class="render-show-main">
         <div class="dropdown" style="position: fixed; z-index: 200;">
             <div class="dropbtn__container">
-                <button class="dropbtn btn-primary render-toggle"><i class="ri-corner-left-down-line"></i> Select
+                <button class="dropbtn btn-primary render-toggle"><x-ri name="corner-left-down-line" /> Select
                     render</button>
-                <button class="dropbtn btn-primary filter-toggle"><i class="ri-filter-3-line"></i> Filter
+                <button class="dropbtn btn-primary filter-toggle"><x-ri name="filter-3-line" /> Filter
                     renders</button>
                 @if (!empty($item['map']))
-                    <button class="dropbtn btn-primary layers-toggle"><i class="ri-stack-line"></i> Layers</button>
+                    <button class="dropbtn btn-primary layers-toggle"><x-ri name="stack-line" /> Layers</button>
                 @endif
             </div>
             <div class="filter-dropdown">
@@ -100,7 +99,7 @@
                 <div class="render-search-container">
                     <input type="text" id="render-search" class="render-search-input"
                         placeholder="Search renders by name...">
-                    <i class="ri-search-line render-search-icon"></i>
+                    <x-ri name="search-line" class="render-search-icon" />
                 </div>
                 <div id="no-results-message" style="display: none; text-align: center; padding: 20px; color: #f2f4f1;">
                     No renders found matching the selected filters
@@ -127,18 +126,7 @@
                 @endforeach
             </div>
         </div>
-        <div class="render-background">
-            <div class="render-background__layer render-background__layer--back"
-                style="background-image: url('{{ asset('images/parallax--back.webp') }}');"></div>
-            <div class="render-background__layer render-background__layer--front"
-                style="background-image: url('{{ asset('images/parallax--front.webp') }}');"></div>
-            <canvas class="render-background__layer render-background__layer--stars1" id="stars-canvas-1"></canvas>
-            <canvas class="render-background__layer render-background__layer--stars2" id="stars-canvas-2"></canvas>
-            <div class="render-background__layer render-background__layer--meteors1"
-                style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
-            <div class="render-background__layer render-background__layer--meteors2"
-                style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
-        </div>
+        @include('background')
         @if (!empty($item['map']))
             <div class="render-viewer" data-map-url="{{ asset('storage/' . $item['map']) }}"
                 @if ($imageUrl) data-fallback-src="{{ $imageUrl }}" @endif
@@ -229,10 +217,6 @@
         </div>
     </main>
     <script>
-        const renderData = @json($item);
-        const rendersPath = '{{ $data['renders_path'] }}';
-        window.renderData = @json($items);
-        window.filters = @json($filters);
         window.pageSlug = '{{ $page->slug }}';
 
         const renderImage = document.querySelector('.render-viewer__image');

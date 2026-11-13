@@ -11,11 +11,10 @@
                 <span></span>
             </button>
             <div class="navbar-items">
-                <a class="btn-primary" href="{{ route('render.index') }}"><i class="ri-rocket-2-fill"></i> Home</a>
-                <a class="btn-primary" href="https://discord.gg/frontier"><i class="ri-discord-fill"></i> Discord</a>
-                <a class="btn-primary" href="https://frontierstation14.com/"><i class="ri-booklet-fill"></i> Wiki</a>
-                <a class="btn-primary" href="https://github.com/new-frontiers-14/frontier-station-14"><i
-                        class="ri-github-fill"></i> Github</a>
+                <a class="btn-primary" href="{{ route('render.index') }}"><x-ri name="rocket-2-fill" /> Home</a>
+                <a class="btn-primary" href="https://discord.gg/frontier"><x-ri name="discord-fill" /> Discord</a>
+                <a class="btn-primary" href="https://frontierstation14.com/"><x-ri name="booklet-fill" /> Wiki</a>
+                <a class="btn-primary" href="https://github.com/new-frontiers-14/frontier-station-14"><x-ri name="github-fill" /> Github</a>
             </div>
         </nav>
     </nav>

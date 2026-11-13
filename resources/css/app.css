@@ -116,6 +116,23 @@ body {
     font-weight: 400;
 }
 
+/* inline SVG icons (resources/views/components/ri.blade.php), sized and coloured like text */
+i[class^="ri-"] {
+    display: inline-block;
+    width: var(--icon-advance, calc(1em * 25 / 24));
+    height: 1em;
+    font-style: normal;
+    line-height: 1;
+    vertical-align: var(--icon-shift, -0.125em);
+}
+
+i[class^="ri-"] > svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+    margin-left: var(--icon-left, calc(1em / 48));
+}
+
 .btn-primary:hover {
     background-color: #3e433d;
     color: #f2f4f1;
@@ -668,6 +685,13 @@ body {
 .render-background__layer--meteors2 {
     background-size: auto;
     z-index: 9;
+}
+
+/* drifting layers are moved by transform only (resources/js/background.js) */
+.render-background__layer--meteors1,
+.render-background__layer--meteors2 {
+    transform-origin: 0 0;
+    will-change: transform;
 }
 
 .render-viewer {

@@ -4,13 +4,28 @@ use App\Http\Controllers\Api\ShuttleApiController;
 use App\Http\Controllers\RenderController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\UserRenderController;
+use App\Http\Middleware\CacheablePublicPage;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-Route::get('/', [RenderController::class, 'index'])->name('render.index');
-Route::get('/render/{slug}', [RenderController::class, 'page'])->name('render.page');
-Route::get('/render/{slug}/{id}', [RenderController::class, 'show'])->name('render.show');
-Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+// Catalog pages: identical for every visitor, served without a session or cookies.
+Route::withoutMiddleware([
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    ShareErrorsFromSession::class,
+    ValidateCsrfToken::class,
+])->middleware(CacheablePublicPage::class)->group(function () {
+    Route::get('/', [RenderController::class, 'index'])->name('render.index');
+    Route::get('/render/{slug}', [RenderController::class, 'page'])->name('render.page');
+    Route::get('/render/{slug}/{id}', [RenderController::class, 'show'])->name('render.show');
+    Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+});
 
 Route::get('/user-renders', [UserRenderController::class, 'index'])->name('user-renders.index');
 Route::get('/user-renders/create', [UserRenderController::class, 'create'])->name('user-renders.create');

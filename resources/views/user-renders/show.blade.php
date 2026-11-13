@@ -16,25 +16,13 @@
     <meta property="og:url" content="{{ route('user-renders.show', $userRender) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
     @include('header')
     <main class="render-show-main">
-        <div class="render-background">
-            <div class="render-background__layer render-background__layer--back"
-                style="background-image: url('{{ asset('images/parallax--back.webp') }}');"></div>
-            <div class="render-background__layer render-background__layer--front"
-                style="background-image: url('{{ asset('images/parallax--front.webp') }}');"></div>
-            <canvas class="render-background__layer render-background__layer--stars1" id="stars-canvas-1"></canvas>
-            <canvas class="render-background__layer render-background__layer--stars2" id="stars-canvas-2"></canvas>
-            <div class="render-background__layer render-background__layer--meteors1"
-                style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
-            <div class="render-background__layer render-background__layer--meteors2"
-                style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
-        </div>
+        @include('background')
         <div class="render-viewer">
             @if ($imageUrl)
                 <div class="render-viewer__loader" id="render-loader">
@@ -53,12 +41,13 @@
             <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
                 <a href="{{ route('user-renders.index') }}" class="btn-primary"
                     style="display: inline-block; font-size: 14px; padding: 8px 12px;">
-                    <i class="ri-arrow-left-line"></i> Back to List
+                    <x-ri name="arrow-left-line" /> Back to List
                 </a>
                 <button onclick="copyRenderLink(event)" class="btn-primary"
                     style="font-size: 14px; padding: 8px 12px; cursor: pointer;">
-                    <i class="ri-link"></i> Copy Link
+                    <x-ri name="link" /> Copy Link
                 </button>
+                <template id="copied-label"><x-ri name="check-line" /> Copied!</template>
             </div>
             <div class="render-info-panel__content">
                 @if ($userRender->user)
@@ -100,7 +89,7 @@
             <div class="user-render-status-notification">
                 @if (session('success'))
                     <div class="success-message">
-                        <i class="ri-checkbox-circle-fill"></i>
+                        <x-ri name="checkbox-circle-fill" />
                         <div>
                             <strong>Success!</strong>
                             <p>{{ session('success') }}</p>
@@ -113,7 +102,7 @@
                 @endif
                 @if ($userRender->status === 'pending')
                     <div class="status-message status-pending">
-                        <i class="ri-time-line"></i>
+                        <x-ri name="time-line" />
                         <div>
                             <strong>Awaiting Moderation</strong>
                             <p>Your render is pending review. It's only accessible via direct link.</p>
@@ -121,7 +110,7 @@
                     </div>
                 @elseif ($userRender->status === 'rejected')
                     <div class="status-message status-rejected">
-                        <i class="ri-close-circle-line"></i>
+                        <x-ri name="close-circle-line" />
                         <div>
                             <strong>Rejected</strong>
                             <p>Your render has been rejected by a moderator.</p>
@@ -162,7 +151,7 @@
             navigator.clipboard.writeText(url).then(function() {
                 const button = event.target.closest('button');
                 const originalText = button.innerHTML;
-                button.innerHTML = '<i class="ri-check-line"></i> Copied!';
+                button.innerHTML = document.getElementById('copied-label').innerHTML;
                 setTimeout(() => {
                     button.innerHTML = originalText;
                 }, 2000);
@@ -175,7 +164,7 @@
                 document.body.removeChild(textarea);
                 const button = event.target.closest('button');
                 const originalText = button.innerHTML;
-                button.innerHTML = '<i class="ri-check-line"></i> Copied!';
+                button.innerHTML = document.getElementById('copied-label').innerHTML;
                 setTimeout(() => {
                     button.innerHTML = originalText;
                 }, 2000);

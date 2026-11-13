@@ -18,30 +18,18 @@
     <meta property="og:url" content="{{ route('render.page', $page->slug) }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
     @include('header')
     <main style="margin-top: 90px; position: relative; z-index: 1;">
-        <div class="render-background">
-            <div class="render-background__layer render-background__layer--back"
-                style="background-image: url('{{ asset('images/parallax--back.webp') }}');"></div>
-            <div class="render-background__layer render-background__layer--front"
-                style="background-image: url('{{ asset('images/parallax--front.webp') }}');"></div>
-            <canvas class="render-background__layer render-background__layer--stars1" id="stars-canvas-1"></canvas>
-            <canvas class="render-background__layer render-background__layer--stars2" id="stars-canvas-2"></canvas>
-            <div class="render-background__layer render-background__layer--meteors1"
-                style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
-            <div class="render-background__layer render-background__layer--meteors2"
-                style="background-image: url('{{ asset('images/parallax--meteors.webp') }}');"></div>
-        </div>
+        @include('background')
         <div class="dropdown" style="position: relative; z-index: 10;">
             <div class="dropbtn__container">
-                <button class="dropbtn btn-primary render-toggle"><i class="ri-corner-left-down-line"></i> Select
+                <button class="dropbtn btn-primary render-toggle"><x-ri name="corner-left-down-line" /> Select
                     render</button>
-                <button class="dropbtn btn-primary filter-toggle"><i class="ri-filter-3-line"></i> Filter
+                <button class="dropbtn btn-primary filter-toggle"><x-ri name="filter-3-line" /> Filter
                     renders</button>
             </div>
             <div class="filter-dropdown">
@@ -71,7 +59,7 @@
                 <div class="render-search-container">
                     <input type="text" id="render-search" class="render-search-input"
                         placeholder="Search renders by name...">
-                    <i class="ri-search-line render-search-icon"></i>
+                    <x-ri name="search-line" class="render-search-icon" />
                 </div>
                 <div id="no-results-message" style="display: none; text-align: center; padding: 20px; color: #f2f4f1;">
                     No renders found matching the selected filters
@@ -100,8 +88,6 @@
         </div>
     </main>
     <script>
-        window.renderData = @json($items);
-        window.filters = @json($filters);
         window.pageSlug = '{{ $page->slug }}';
     </script>
 </body>
